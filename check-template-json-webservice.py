@@ -5,12 +5,20 @@
 #########################################
 #
 #
+# Author: Matthew McMillan - matthew.mcmillan@gmail.com
+#
+#
 # Nagios error codes
 # 0 = OK
 # 1 = WARNING
 # 2 = CRITICAL
 # 3 = UNKNOWN
 #
+# This check template uses a JSON test website (http://www.jsontest.com/)
+# as an example webservice. Please change this to fit your needs.
+#
+# This is only an example/template. This check is not useful unless it 
+# is customized for your environment and webservice. 
 #
 # Nagios dev guidelines
 # http://nagiosplug.sourceforge.net/developer-guidelines.html
