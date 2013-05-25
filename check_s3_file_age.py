@@ -127,19 +127,19 @@ for key in bucket.list():
 
 #Begin formatting status message for Nagios output
 #This is conditionally formatted based on requested min/max options.
-msg = ' |'
+msg = ' -'
 if minfileage > 0:
     msg = msg + ' MIN:' + str(minfileage) + 'hrs'
 if maxfileage > 0:
     msg = msg + ' MAX:' + str(maxfileage) + 'hrs'
 
 if maxfileage > 0:
-      msg = msg + ' | Files exceeding MAX time: ' + str(maxfilecount)
+      msg = msg + ' - Files exceeding MAX time: ' + str(maxfilecount)
 
 if minfileage > 0:
-      msg = msg + ' | Files meeting MIN time: ' + str(minfilecount)
+      msg = msg + ' - Files meeting MIN time: ' + str(minfilecount)
 
-msg = msg + ' | Total file count: ' + str(totalfilecount)
+msg = msg + ' - Total file count: ' + str(totalfilecount)
 
 
 #I think there probably is a better way of doing this but what I have here works.
