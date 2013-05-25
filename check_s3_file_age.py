@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This Nagios check looks at the age of backup files stored on S3.
+# This Nagios check looks at the age of files stored in an S3 bucket.
 # It alerts if files haven't been uploaded within a certain time frame
 # and/or alerts if files are too old.
 # This script requires authentication credentials to be stored in
@@ -13,6 +13,13 @@
 #       aws_access_key_id = ABCDEFJKJK39939
 #       aws_secret_access_key = 443xkdjksjkldsjfklsdjsdkjsdfkls32xkj2333
 #
+#
+#
+# -- Nagios error codes --
+#    0 = OK/green
+#    1 = WARNING/yellow
+#    2 = CRITICAL/red
+#    3 = UNKNOWN/purple
 #
 
 import ConfigParser
@@ -34,12 +41,12 @@ parser.add_argument('--bucketname', dest='bucketname', type=str, required=True,
                     help='Name of S3 bucket')
 
 parser.add_argument('--minfileage', dest='minfileage', type=int, default=0,
-                    help='Minimum age of files in an S3 bucket in hours. \
+                    help='Minimum age for files in an S3 bucket in hours. \
                           Default is 0 hours (disabled).\
                           ')
 
 parser.add_argument('--maxfileage', dest='maxfileage', type=int, default=0,
-                    help='Maximum age of files in an S3 bucket in hours. \
+                    help='Maximum age for files in an S3 bucket in hours. \
                           Default is 0 hours (disabled).')
 
 ####
@@ -92,9 +99,7 @@ bucket = s3.get_bucket(bucketname)
 if (args.debug):
     print "Bucket: %s" % bucket
 
-systemhostname = socket.gethostname()
-
-
+#Figure out time delta between current time and max/min file age
 maxagetime = datetime.datetime.now(tzutc()) - datetime.timedelta(hours=maxfileage)
 if (args.debug):
     print  'MAX AGE TIME: ' + str(maxagetime)
@@ -103,7 +108,8 @@ minagetime = datetime.datetime.now(tzutc()) - datetime.timedelta(hours=minfileag
 if (args.debug):
     print  'MIN AGE TIME: ' + str(minagetime)
 
-
+#Loop through keys (files) in the S3 bucket and
+#check each one for min and max file age.
 for key in bucket.list():
     if (args.listfiles):
         print '|' + str(key.storage_class) + '|' + str(key.name) + '|' \
@@ -119,6 +125,8 @@ for key in bucket.list():
         minfilecount += 1
     totalfilecount += 1
 
+#Begin formatting status message for Nagios output
+#This is conditionally formatted based on requested min/max options.
 msg = ' |'
 if minfileage > 0:
     msg = msg + ' MIN:' + str(minfileage) + 'hrs'
@@ -133,6 +141,14 @@ if minfileage > 0:
 
 msg = msg + ' | Total file count: ' + str(totalfilecount)
 
+
+#I think there probably is a better way of doing this but what I have here works.
+#
+# Decide exit code for Nagios based on maxfilecount and minfilecount results.
+#
+# maxfilecount should equal zero for green/OK
+# minfilecount should be greater than zero for green/OK
+#
 if minfileage == 0 and maxfileage == 0:
     statusline = 'WARNING: No max or min specified. Please specify at least one.' + msg
     exitcode = 1
@@ -160,3 +176,4 @@ else:
 
 print statusline
 exit(exitcode)
+
