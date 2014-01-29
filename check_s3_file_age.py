@@ -1,5 +1,14 @@
 #!/usr/bin/env python
 
+##########################################################
+#
+# Written by Matthew McMillan
+# matthew.mcmillan@gmail.com
+# @matthewmcmillan
+# https://matthewcmcmillan.blogspot.com
+# https://github.com/matt448/nagios-checks
+#
+#
 # This Nagios check looks at the age of files stored in an S3 bucket.
 # It alerts if files haven't been uploaded within a certain time frame
 # and/or alerts if files are too old.

@@ -4,10 +4,11 @@
 # Notes
 #########################################
 #
-#
-# Author: Matthew McMillan - matthew.mcmillan@gmail.com
-# Blog: http://matthewcmcmillan.blogspot.com
-# Code repo: https://github.com/matt448/nagios-checks
+# Written by Matthew McMillan
+# matthew.mcmillan@gmail.com
+# @matthewmcmillan
+# https://matthewcmcmillan.blogspot.com
+# https://github.com/matt448/nagios-checks
 #
 # Nagios error codes
 # 0 = OK

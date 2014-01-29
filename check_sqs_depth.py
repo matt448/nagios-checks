@@ -2,7 +2,11 @@
 
 ##########################################################
 #
-# Written by Matthew McMillan, matthew.mcmillan@gmail.com
+# Written by Matthew McMillan
+# matthew.mcmillan@gmail.com
+# @matthewmcmillan
+# https://matthewcmcmillan.blogspot.com
+# https://github.com/matt448/nagios-checks
 #
 # Requires the boto library and a .boto file with read
 # permissions to the queues.
