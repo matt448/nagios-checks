@@ -40,6 +40,7 @@ import time
 import socket
 import boto
 import argparse
+import re
 
 #Parse command line arguments
 parser = argparse.ArgumentParser(description='This script is a Nagios check that \
@@ -58,6 +59,8 @@ parser.add_argument('--maxfileage', dest='maxfileage', type=int, default=0,
                     help='Maximum age for files in an S3 bucket in hours. \
                           Default is 0 hours (disabled).')
 
+parser.add_argument('--bucketfolder', dest='bucketfolder', type=str, default='', 
+                    help='Folder to check inside bucket (optional).')
 ####
 # Add arg option for s3 region?
 ###
@@ -75,6 +78,8 @@ args = parser.parse_args()
 bucketname = args.bucketname
 minfileage = args.minfileage
 maxfileage = args.maxfileage
+bucketfolder  = args.bucketfolder
+bucketfolder_regex = '^' + bucketfolder
 
 maxfilecount = 0
 minfilecount = 0
@@ -120,19 +125,20 @@ if (args.debug):
 #Loop through keys (files) in the S3 bucket and
 #check each one for min and max file age.
 for key in bucket.list():
-    if (args.listfiles):
-        print '|' + str(key.storage_class) + '|' + str(key.name) + '|' \
-              + str(dateutil.parser.parse(key.last_modified).replace(tzinfo=tzutc()))
-    if dateutil.parser.parse(key.last_modified) < maxagetime:
+    if (re.match(bucketfolder_regex,str(key.name))):
         if (args.listfiles):
-            print 'Found file older than maxfileage of ' + str(maxfileage) + ' hours'
-        maxfilecount += 1
-    #print key.__dict__
-    if dateutil.parser.parse(key.last_modified) > minagetime:
-        if (args.listfiles):
-            print 'Found file newer than minfileage of ' + str(minfileage) + ' hours'
-        minfilecount += 1
-    totalfilecount += 1
+            print '|' + str(key.storage_class) + '|' + str(key.name) + '|' \
+                  + str(dateutil.parser.parse(key.last_modified).replace(tzinfo=tzutc()))
+        if dateutil.parser.parse(key.last_modified) < maxagetime:
+            if (args.listfiles):
+                print 'Found file older than maxfileage of ' + str(maxfileage) + ' hours'
+            maxfilecount += 1
+        #print key.__dict__
+        if dateutil.parser.parse(key.last_modified) > minagetime:
+            if (args.listfiles):
+                print 'Found file newer than minfileage of ' + str(minfileage) + ' hours'
+            minfilecount += 1
+        totalfilecount += 1
 
 #Begin formatting status message for Nagios output
 #This is conditionally formatted based on requested min/max options.
