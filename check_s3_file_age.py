@@ -178,7 +178,7 @@ elif maxfilecount > 0 and maxfileage > 0 and minfileage == 0:
     exitcode = 2
 elif minfilecount == 0 and maxfileage == 0 and minfileage > 0:
     statusline = 'CRITICAL: S3 files do not meet MIN time requirement.' + msg
-    exitcode = 3
+    exitcode = 2
 elif minfilecount > 0 and maxfileage == 0 and minfileage > 0:
     statusline = 'OK: S3 files meet MIN time boundaries.' + msg
     exitcode = 0
