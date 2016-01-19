@@ -81,6 +81,12 @@ c.close()
 #Extract the lag value. Should be pos 32 in the list
 lag_seconds = int(row[32])
 
+# A lag value of NoneType indicates replication isn't running.
+# Not sure of the best way to handle when replication isn't
+# running. Setting lags_seconds to zero doesn't seem right so I
+# picked 12 hours.
+if lag_seconds is None:
+        lag_seconds = 43200
 
 # Set exit code based on number of warnings and criticals
 if lag_seconds < warn:
