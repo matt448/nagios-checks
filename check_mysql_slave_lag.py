@@ -82,7 +82,7 @@ c.close()
 lag_seconds = row[32]
 
 # Not sure of the best way to handle when replication isn't
-# running. Setting lags_seconds to zero doesn't seem right so I
+# running. Setting lag_seconds to zero doesn't seem right so I
 # picked 12 hours.
 if lag_seconds is None:
     lag_seconds = 43200
