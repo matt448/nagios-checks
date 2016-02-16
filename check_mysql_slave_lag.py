@@ -61,6 +61,7 @@ if crit <= warn:
 statusMsg = ""
 msgLine = ""
 perfdataMsg = ""
+replicationfailed = False
 exitCode = 3
 
 
@@ -78,27 +79,30 @@ if args.debug:
 #Close the db connection
 c.close()
 
-#Extract the lag value. Should be pos 32 in the list
+#Extract the lag value. Should be position 32 in the list
 lag_seconds = row[32]
 
-# Not sure of the best way to handle when replication isn't
-# running. Setting lag_seconds to zero doesn't seem right so I
-# picked 12 hours.
+# I didn't like the previous way of handling failed replication
+# because it skewed the stats. Now if repication fails we will
+# set the value to zero and flag replication as failed.
 if lag_seconds is None:
-    lag_seconds = 43200
+    lag_seconds = 0
+    replicationfailed = True
 else:
-    #Convert the string value into an integer
     lag_seconds = int(lag_seconds)
 
-# Set exit code based on number of warnings and criticals
-if lag_seconds < warn:
+# Set exit code based on amount of lag
+if lag_seconds < warn and not replicationfailed:
     statusMsg = "OK - Replication Lag " + str(lag_seconds) + " seconds"
     exitCode = 0
-elif lag_seconds >= warn and lag_seconds < crit:
+elif lag_seconds >= warn and lag_seconds < crit and not replicationfailed:
     statusMsg = "WARNING - Replication Lag " + str(lag_seconds) + " seconds"
     exitCode = 1
-elif lag_seconds >= crit:
+elif lag_seconds >= crit and not replicationfailed:
     statusMsg = "CRITICAL - Replication Lag " + str(lag_seconds) + " seconds"
+    exitCode = 2
+elif replicationfailed:
+    statusMsg = "CRITICAL - Replication Failed"
     exitCode = 2
 else:
     statusMsg = "UNKNOWN - Replication Lag " + str(lag_seconds) + " seconds"
